@@ -1,0 +1,33 @@
+name: Package Extension
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "extension/**"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Zip extension
+        run: |
+          cd apps/extension
+          zip -r ../interest-badge-extension.zip .
+
+      - name: Get version
+        id: version
+        run: echo "version=$(date +'%Y.%m.%d.%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Interest Badge v${{ steps.version.outputs.version }}
+          files: interest-badge-extension.zip
+          body: Chrome extension build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
