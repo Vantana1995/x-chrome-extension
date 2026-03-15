@@ -17,6 +17,7 @@
   transition: all 0.25s ease;
   white-space: nowrap;
   width: fit-content;
+  will-change: height, padding;
 }
 
 .ib-badge.ib-expanded {
@@ -38,21 +39,28 @@
   display: inline-flex;
   flex-wrap: wrap;
   gap: 4px;
-  max-width: 0;
-  overflow: hidden;
   opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  width: 0;
+  overflow: hidden;
   transition:
-    max-width 0.25s ease,
-    opacity 0.25s ease,
-    margin 0.25s ease;
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    width 0.2s ease,
+    margin 0.2s ease;
   margin-left: 0;
+  pointer-events: none;
 }
 
 .ib-badge.ib-expanded .ib-interests {
-  max-width: 500px;
-  width: fit-content;
   opacity: 1;
+  transform: scaleX(1);
+  width: auto;
+  max-width: 400px;
   margin-left: 6px;
+  pointer-events: all;
+  overflow: visible;
 }
 
 .ib-pill {

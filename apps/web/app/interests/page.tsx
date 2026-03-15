@@ -120,7 +120,10 @@ export default function InterestsPage() {
             <p className="font-bold mb-4">
               Interests saved. Install the extension to see badges on Twitter.
             </p>
-            <a href="#" className="text-sm uppercase tracking-widest underline">
+            <a
+              href="https://github.com/Vantana1995/x-chrome-extension/releases"
+              className="text-sm uppercase tracking-widest underline"
+            >
               Install Chrome Extension
             </a>
           </div>
