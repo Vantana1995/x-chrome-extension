@@ -11,53 +11,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TwitterStrategy = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
-const OAuth2Strategy = require('passport-oauth2');
-const auth_service_1 = require("../auth.service");
-let TwitterStrategy = class TwitterStrategy extends (0, passport_1.PassportStrategy)(OAuth2Strategy, 'twitter') {
-    configService;
-    authService;
-    constructor(configService, authService) {
+const passport_twitter_1 = require("passport-twitter");
+const prisma_service_1 = require("../../../prisma/prisma.service");
+let TwitterStrategy = class TwitterStrategy extends (0, passport_1.PassportStrategy)(passport_twitter_1.Strategy, 'twitter') {
+    prisma;
+    constructor(prisma) {
         super({
-            authorizationURL: 'https://twitter.com/i/oauth2/authorize',
-            tokenURL: 'https://api.twitter.com/2/oauth2/token',
-            clientID: configService.get('TWITTER_CLIENT_ID'),
-            clientSecret: configService.get('TWITTER_CLIENT_SECRET'),
-            callbackURL: configService.get('TWITTER_CALLBACK_URL'),
-            scope: ['tweet.read', 'users.read', 'offline.access'],
-            state: true,
+            consumerKey: process.env.TWITTER_CLIENT_ID,
+            consumerSecret: process.env.TWITTER_CLIENT_SECRET,
+            callbackURL: process.env.TWITTER_CALLBACK_URL,
+            includeEmail: false,
         });
-        this.configService = configService;
-        this.authService = authService;
+        this.prisma = prisma;
     }
-    async validate(accessToken, _refreshToken, profile, done) {
-        try {
-            const twitterId = profile.id ?? profile.user_id ?? profile.sub;
-            const username = profile.username ??
-                profile.username?.username ??
-                profile.displayName?.replace(/\s+/g, '').toLowerCase();
-            const displayName = profile.displayName ?? username;
-            const avatarUrl = profile.photos && profile.photos.length > 0
-                ? profile.photos[0].value
-                : null;
-            const user = await this.authService.upsertUserFromTwitterProfile({
-                id: twitterId,
-                username,
-                displayName,
-                avatarUrl,
-            });
-            done(null, { id: user.id, username: user.username });
-        }
-        catch (err) {
-            done(err, undefined);
-        }
+    async validate(token, tokenSecret, profile) {
+        const user = await this.prisma.user.upsert({
+            where: { twitterId: profile.id },
+            update: {
+                displayName: profile.displayName,
+                avatarUrl: profile.photos?.[0]?.value ?? null,
+            },
+            create: {
+                twitterId: profile.id,
+                username: profile.username,
+                displayName: profile.displayName,
+                avatarUrl: profile.photos?.[0]?.value ?? null,
+            },
+        });
+        return user;
     }
 };
 exports.TwitterStrategy = TwitterStrategy;
 exports.TwitterStrategy = TwitterStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService,
-        auth_service_1.AuthService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], TwitterStrategy);
 //# sourceMappingURL=twitter.strategy.js.map

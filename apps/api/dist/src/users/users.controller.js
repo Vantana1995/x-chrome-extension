@@ -14,42 +14,35 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
-const throttler_1 = require("@nestjs/throttler");
-const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const users_service_1 = require("./users.service");
-const update_interests_dto_1 = require("./dto/update-interests.dto");
 let UsersController = class UsersController {
     usersService;
     constructor(usersService) {
         this.usersService = usersService;
     }
-    async getInterests(username) {
+    findByUsername(username) {
         return this.usersService.findByUsername(username);
     }
-    async updateMyInterests(req, body) {
-        const userId = req.user.sub;
-        await this.usersService.updateCurrentUserInterests(userId, body.categoryIds);
+    updateInterests(req, body) {
+        return this.usersService.updateInterests(req.user.id, body.categoryIds);
     }
 };
 exports.UsersController = UsersController;
 __decorate([
     (0, common_1.Get)(':username/interests'),
-    (0, common_1.Header)('Cache-Control', 'public, max-age=300'),
-    (0, throttler_1.Throttle)({ default: { ttl: 60_000, limit: 300 } }),
     __param(0, (0, common_1.Param)('username')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "getInterests", null);
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "findByUsername", null);
 __decorate([
     (0, common_1.Put)('me/interests'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, (0, common_1.Req)()),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, update_interests_dto_1.UpdateInterestsDto]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "updateMyInterests", null);
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "updateInterests", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

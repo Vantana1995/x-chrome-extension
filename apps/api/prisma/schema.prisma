@@ -1,53 +1,45 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String         @id @default(uuid())
-  twitterId   String         @unique
-  username    String         @unique
-  displayName String
-  avatarUrl   String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+    id          String              @id @default(uuid())
+    twitterId   String              @unique
+    username    String              @unique
+    displayName String
+    avatarUrl   String?
+    createdAt   DateTime            @default(now())
+    updatedAt   DateTime            @updatedAt
+    interests   UserInterests[]
 
-  interests   UserInterest[]
-
-  @@index([twitterId])
-  @@index([username])
+    @@index([twitterId])
+    @@index([username])
 }
 
 model Category {
-  id        String         @id @default(uuid())
-  slug      String         @unique
-  name      String
-  groupName String
-  createdAt DateTime       @default(now())
+    id          String              @id @default(uuid())
+    slug        String              @unique
+    name        String
+    groupName   String
+    createdAt   DateTime            @default(now())
+    interests   UserInterests[]
 
-  interests UserInterest[]
-
-  @@index([slug])
+    @@index([slug])
 }
 
-model UserInterest {
-  id         String   @id @default(uuid())
-  userId     String
-  categoryId String
-  createdAt  DateTime @default(now())
+model UserInterests {
+    id          String              @id @default(uuid())
+    userId      String  
+    categoryId  String
+    createdAt   DateTime            @default(now())
+    user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+    category    Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, categoryId])
-  @@index([userId])
+    @@unique([userId, categoryId])
+    @@index([userId])
 }

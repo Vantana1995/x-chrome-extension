@@ -14,39 +14,20 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const auth_service_1 = require("./auth.service");
-const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
-const prisma_service_1 = require("../prisma/prisma.service");
 let AuthController = class AuthController {
-    configService;
     authService;
-    prisma;
-    constructor(configService, authService, prisma) {
-        this.configService = configService;
+    constructor(authService) {
         this.authService = authService;
-        this.prisma = prisma;
     }
-    async twitterLogin() {
-        return;
+    twitterAuth() { }
+    twitterCallback(req, res) {
+        const token = this.authService.login(req.user);
+        return res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
     }
-    async twitterCallback(req, res) {
-        const user = req.user;
-        const token = await this.authService.generateJwt(user);
-        const frontendUrl = this.configService.get('FRONTEND_URL') ??
-            'https://frontend.vercel.app';
-        return res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
-    }
-    async me(req) {
-        const userId = req.user.sub;
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-        });
-        return user;
-    }
-    async logout() {
-        return { success: true };
+    getMe(req) {
+        return req.user;
     }
 };
 exports.AuthController = AuthController;
@@ -55,8 +36,8 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('twitter')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "twitterLogin", null);
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "twitterAuth", null);
 __decorate([
     (0, common_1.Get)('twitter/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('twitter')),
@@ -64,26 +45,18 @@ __decorate([
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], AuthController.prototype, "twitterCallback", null);
 __decorate([
     (0, common_1.Get)('me'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "me", null);
-__decorate([
-    (0, common_1.Post)('logout'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "logout", null);
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getMe", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [config_1.ConfigService,
-        auth_service_1.AuthService,
-        prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

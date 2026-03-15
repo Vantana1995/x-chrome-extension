@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 let UsersService = class UsersService {
     prisma;
     constructor(prisma) {
@@ -22,35 +22,27 @@ let UsersService = class UsersService {
             where: { username },
             include: {
                 interests: {
-                    include: {
-                        category: true,
-                    },
+                    include: { category: true },
                 },
             },
         });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
+        if (!user)
+            throw new common_1.NotFoundException('User not registered yet');
         return {
             username: user.username,
-            displayName: user.displayName,
+            displayedName: user.displayName,
             avatarUrl: user.avatarUrl,
-            interests: user.interests.map((ui) => ui.category),
+            interests: user.interests.map((i) => i.category),
         };
     }
-    async updateCurrentUserInterests(userId, categoryIds) {
+    async updateInterests(userId, categoryIds) {
         await this.prisma.$transaction([
-            this.prisma.userInterest.deleteMany({
-                where: { userId },
-            }),
-            this.prisma.userInterest.createMany({
-                data: categoryIds.map((categoryId) => ({
-                    userId,
-                    categoryId,
-                })),
-                skipDuplicates: true,
+            this.prisma.userInterests.deleteMany({ where: { userId } }),
+            this.prisma.userInterests.createMany({
+                data: categoryIds.map((categoryId) => ({ userId, categoryId })),
             }),
         ]);
+        return this.findByUsername(userId);
     }
 };
 exports.UsersService = UsersService;

@@ -1,6 +1,6 @@
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 export declare class CategoriesService {
-    private readonly prisma;
+    private prisma;
     constructor(prisma: PrismaService);
-    getAllGroupedByGroupName(): Promise<any>;
+    findAll(): Promise<{}>;
 }

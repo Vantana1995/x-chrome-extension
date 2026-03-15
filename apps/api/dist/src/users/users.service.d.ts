@@ -1,12 +1,29 @@
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 export declare class UsersService {
-    private readonly prisma;
+    private prisma;
     constructor(prisma: PrismaService);
     findByUsername(username: string): Promise<{
-        username: any;
-        displayName: any;
-        avatarUrl: any;
-        interests: any;
+        username: string;
+        displayedName: string;
+        avatarUrl: string;
+        interests: {
+            id: string;
+            slug: string;
+            name: string;
+            groupName: string;
+            createdAt: Date;
+        }[];
     }>;
-    updateCurrentUserInterests(userId: string, categoryIds: string[]): Promise<void>;
+    updateInterests(userId: string, categoryIds: string[]): Promise<{
+        username: string;
+        displayedName: string;
+        avatarUrl: string;
+        interests: {
+            id: string;
+            slug: string;
+            name: string;
+            groupName: string;
+            createdAt: Date;
+        }[];
+    }>;
 }

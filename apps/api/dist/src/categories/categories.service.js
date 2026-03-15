@@ -11,22 +11,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoriesService = void 0;
 const common_1 = require("@nestjs/common");
-const prisma_service_1 = require("../prisma/prisma.service");
+const prisma_service_1 = require("../../prisma/prisma.service");
 let CategoriesService = class CategoriesService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getAllGroupedByGroupName() {
+    async findAll() {
         const categories = await this.prisma.category.findMany({
-            orderBy: [{ groupName: 'asc' }, { name: 'asc' }],
+            orderBy: { groupName: 'asc' },
         });
-        return categories.reduce((acc, category) => {
-            if (!acc[category.groupName]) {
-                acc[category.groupName] = [];
-            }
-            acc[category.groupName].push(category);
-            return acc;
+        return categories.reduce((groups, category) => {
+            const group = category.groupName;
+            if (!groups[group])
+                groups[group] = [];
+            groups[group].push(category);
+            return groups;
         }, {});
     }
 };

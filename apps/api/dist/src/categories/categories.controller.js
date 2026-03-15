@@ -17,8 +17,8 @@ let CategoriesController = class CategoriesController {
     constructor(categoriesService) {
         this.categoriesService = categoriesService;
     }
-    async findAll() {
-        return this.categoriesService.getAllGroupedByGroupName();
+    findAll() {
+        return this.categoriesService.findAll();
     }
 };
 exports.CategoriesController = CategoriesController;
@@ -26,7 +26,7 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], CategoriesController.prototype, "findAll", null);
 exports.CategoriesController = CategoriesController = __decorate([
     (0, common_1.Controller)('categories'),

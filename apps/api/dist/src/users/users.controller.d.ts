@@ -1,13 +1,31 @@
 import { UsersService } from './users.service';
-import { UpdateInterestsDto } from './dto/update-interests.dto';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    getInterests(username: string): Promise<{
-        username: any;
-        displayName: any;
-        avatarUrl: any;
-        interests: any;
+    findByUsername(username: string): Promise<{
+        username: string;
+        displayedName: string;
+        avatarUrl: string;
+        interests: {
+            id: string;
+            slug: string;
+            name: string;
+            groupName: string;
+            createdAt: Date;
+        }[];
     }>;
-    updateMyInterests(req: any, body: UpdateInterestsDto): Promise<void>;
+    updateInterests(req: any, body: {
+        categoryIds: string[];
+    }): Promise<{
+        username: string;
+        displayedName: string;
+        avatarUrl: string;
+        interests: {
+            id: string;
+            slug: string;
+            name: string;
+            groupName: string;
+            createdAt: Date;
+        }[];
+    }>;
 }
