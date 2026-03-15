@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "extension/**"
+      - "apps/extension/**"
 
 jobs:
   release:
